@@ -1,0 +1,141 @@
+version: 2
+
+models:
+  - name: dates
+    description: "Dates from 2001 to 2100 (i.e. the 21st century)."
+
+    columns:
+      # Primary key
+      - name: date
+        description: "Date."
+        tests:
+          - not_null
+          - unique
+
+      # Timestamps and properties
+      - name: day_of_week
+        description: |
+          Number of the day of the week, using ISO semantics.
+          - Monday is `1`.
+          - Sunday is `7`.
+        tests:
+          - not_null
+          - accepted_values:
+              values: [1, 2, 3, 4, 5, 6, 7]
+              quote: false
+
+      - name: day_of_week_name
+        description: "Name of the day of the week."
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+          - dbt_utils.expression_is_true:
+              expression: = 'Monday'
+              condition: day_of_week = 1
+          - dbt_utils.expression_is_true:
+              expression: = 'Sunday'
+              condition: day_of_week = 7
+
+      - name: day_of_month
+        description: "Number of the day of the month."
+        tests:
+          - not_null
+
+      - name: day_of_year
+        description: "Number of the day of the year."
+        tests:
+          - not_null
+
+      - name: week_of_year
+        description: |
+          Number of the week of the year, using ISO semantics.
+          - Weeks begin on Mondays and end on Sundays.
+          - Week `1` is the first week with four or more days in the calendar year.
+          - The first week of the year may extend back up to three days into the previous calendar year.
+          - The last week of the year may extend forward up to three days into the next calendar year.
+        tests:
+          - not_null
+
+      - name: year_of_week
+        description: |
+          Year that the week indicated by `week_of_year` belongs to, using ISO semantics.
+          - Weeks belong to whichever year contains four or more days of the week.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: = year - 1
+              condition: month_of_year = 1 and week_of_year >= 52
+          - dbt_utils.expression_is_true:
+              expression: = year + 1
+              condition: month_of_year = 12 and week_of_year = 1
+
+      - name: week_start_date
+        description: |
+          Date of the start of the week, using ISO semantics.
+          - Weeks begin on Mondays.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "= {{ dbt_utils.dateadd('day', '1 - day_of_week', 'date') }}"
+
+      - name: week_end_date
+        description: |
+          Date of the end of the week, using ISO semantics.
+          - Weeks end on Sundays.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "= {{ dbt_utils.dateadd('day', '7 - day_of_week', 'date') }}"
+
+      - name: month_of_year
+        description: "Number of the month of the year."
+        tests:
+          - not_null
+
+      - name: month_of_year_name
+        description: "Name of the month of the year."
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+
+      - name: month_start_date
+        description: "Date of the start of the month."
+        tests:
+          - not_null
+
+      - name: month_end_date
+        description: "Date of the end of the month."
+        tests:
+          - not_null
+
+      - name: quarter_of_year
+        description: "Number of the quarter of the year."
+        tests:
+          - not_null
+
+      - name: quarter_start_date
+        description: "Date of the start of the quarter."
+        tests:
+          - not_null
+
+      - name: quarter_end_date
+        description: "Date of the end of the quarter."
+        tests:
+          - not_null
+
+      - name: year
+        description: "Year number."
+        tests:
+          - not_null
+
+      - name: year_start_date
+        description: "Date of the start of the year."
+        tests:
+          - not_null
+
+      - name: year_end_date
+        description: "Date of the end of the year."
+        tests:
+          - not_null

@@ -1,0 +1,17 @@
+
+fixed:
+  type: snowflake
+  account: FY00829
+  database: analytics_dev
+  threads: 8
+prompts:
+  user:
+    hint: Your Snowflake username
+  password:
+    hint: Your Snowflake password
+    hide_input: true
+  warehouse:
+    hint: Same as your Snowflake username
+  schema:
+    hint: Same as your Snowflake username
+

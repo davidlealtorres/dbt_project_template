@@ -1,0 +1,66 @@
+# Name your project! Project names should contain only lowercase characters
+# and underscores. A good package name should reflect your organization's
+# name or the intended use of these models
+name: 'SuperClient_analytics'
+version: '1.0.0'
+config-version: 2
+
+require-dbt-version: [">=1.2.0", "<2.0.0"]
+
+# Configuring your profile: https://docs.getdbt.com/dbt-cli/configure-your-profile
+profile: 'SuperClient_analytics'
+
+# These configurations specify where dbt should look for different types of files.
+# The `model-paths` config, for example, states that models in this project can be
+# found in the "models/" directory. You probably won't need to change these!
+model-paths: ["models"]
+analysis-paths: ["analysis"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+target-path: "target"  # directory which will store compiled SQL files
+clean-targets:         # directories to be removed by `dbt clean`
+  - "target"
+  - "dbt_modules"
+  - "dbt_packages"
+
+# Append query comments rather than prepending them, because some databases like Snowflake remove leading comments.
+query-comment:
+  append: true
+
+vars:
+  deployment_target_names: ['production', 'prod']
+
+# Configuring models: https://docs.getdbt.com/docs/configuring-models
+# These settings can be overridden in the individual model files using the `{{ config(...) }}` macro.
+models:
+  +materialized: ephemeral
+  +schema: miscellaneous
+  +bind: false  # Materialize all views as late-binding.
+  +persist_docs:
+    relation: true
+    columns: true
+  SuperClient_analytics:
+    marts:
+      +materialized: table
+      core:
+        +schema: core
+        intermediate:
+          +schema: core_intermediate
+    sources:
+      +materialized: view
+      +schema: sources
+    utils:
+      +materialized: table
+      +schema: utils
+
+seeds:
+  +schema: seeds
+  +quote_columns: false
+
+snapshots:
+  # The generate_schema_name() macro doesn't apply to `target_schema`, so manually apply the same logic.
+  +target_schema: "{{ 'snapshots' if var('is_deployment', target.name in ['production', 'prod']) else target.schema ~ '_snapshots' }}"
+

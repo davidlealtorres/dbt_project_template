@@ -1,0 +1,7 @@
+target/
+dbt_packages/
+logs/
+.tox/
+
+.DS_Store
+desktop.ini

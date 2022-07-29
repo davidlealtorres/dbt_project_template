@@ -1,0 +1,10 @@
+SuperClient_analytics:
+  target: production # This target is named production to align the schema names with those in the production database. SQLFluff does not have write access to production data, so this is safe.
+  outputs:
+    production:
+      type: snowflake
+      account: FY00829
+      user: sqlfluff
+      password: "{{ env_var('SNOWFLAKE_SQLFLUFF_PASSWORD') }}"
+      database: analytics
+      schema: analytics
