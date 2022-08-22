@@ -1,8 +1,8 @@
 {
     "files.associations": {
         "*.yaml": "jinja-yaml",
-        "*.yml": "jinja-yaml",
-        "*.sql": "jinja-sql",
+        "*.yml": "yaml",
+        "*.sql": "sql",
         "**/docs/**/*.md": "jinja-md"
     }
 }
