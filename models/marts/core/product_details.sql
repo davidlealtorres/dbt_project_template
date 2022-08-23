@@ -5,36 +5,43 @@ with int_product_max_date as (
 , product_details as (
   
  select
-  pd.asin
-  , pd.brand
-  , pd.name
-  , pd.price as price_usd
-  , pd.shipping_weight as shipping_weight_lb
-  , pd.is_prime 
-  , pd.dimension_x as dimension_x_in
-  , pd.dimension_y as dimension_y_in
-  , pd.dimension_z as dimension_z_in
-  , {{ calculate_volume('pd.dimension_x', 'pd.dimension_y', 'pd.dimension_z', 2) }} as volume_in3
-  , pd.weight as product_weight_lb
-  , pd.review_rating as stars_rating
-  , {{ superclient_rating('pd.review_rating') }} as superclient_rating
-  from  "DATAHAWK_SHARE_DEMO_SNOWFLAKE_SECURE_SHARE_1629840906256"."PRODUCT"."PRODUCT_DETAILED" pd 
-  inner join int_product_max_date pdmd on pd.snapshot_ts = pdmd.max_date and pd.asin = pdmd.asin
+    product_details.product_id
+    , product_details.product_brand
+    , product_details.product_name
+    , product_details.product_price_usd
+    , product_details.product_shipping_weight_lb
+    , product_details.flag_is_product_prime 
+    , product_details.product_dimension_x_in
+    , product_details.product_dimension_y_in
+    , product_details.product_dimension_z_in
+    , product_details.product_volume_in3
+    , product_details.product_weight_lb
+    , product_details.product_stars_rating
+    , product_details.product_superclient_rating
+  from  {{ ref('snowflake__product_details') }} product_details 
+  /* Join to intermediate model int_product_max_date to bring the latest product's information */ 
+  inner join int_product_max_date on product_details.snapshot_at_et = int_product_max_date.max_snapshot_at_et 
+    and product_details.product_id = int_product_max_date.product_id
   
 )
 
 select
-    asin
-    , brand
-    , name
-    , price_usd
-    , shipping_weight_lb
-    , is_prime 
-    , dimension_x_in
-    , dimension_y_in
-    , dimension_z_in
-    , volume_in3
+   
+   /* Primary Key */
+   product_id
+
+   /* Properties and Statuses */
+    , product_brand
+    , product_name
+    , product_price_usd
+    , product_shipping_weight_lb
+    , flag_is_product_prime 
+    , product_dimension_x_in
+    , product_dimension_y_in
+    , product_dimension_z_in
+    , product_volume_in3
     , product_weight_lb
-    , stars_rating
-    , superclient_rating
+    , product_stars_rating
+    , product_superclient_rating
+
 from product_details

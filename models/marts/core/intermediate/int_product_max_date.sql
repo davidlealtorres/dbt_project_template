@@ -1,14 +1,17 @@
+/* This is a simple intermediate model that brings the latest product's information date.
+Its purpose is to demonstrate the usage of intermedate models. */
+
 with int_product_max_date as (
     
     select 
-        asin, 
-        max(snapshot_ts) as max_date
-    from "DATAHAWK_SHARE_DEMO_SNOWFLAKE_SECURE_SHARE_1629840906256"."PRODUCT"."PRODUCT_DETAILED" pd
-    group by asin
+        product_details.product_id, 
+        max(product_details.snapshot_at_et) as max_snapshot_at_et
+    from {{ ref('snowflake__product_details') }} product_details 
+    group by product_details.product_id
 
 )
 
 select
-    asin
-    , max_date
+    product_id
+    , max_snapshot_at_et
 from int_product_max_date
