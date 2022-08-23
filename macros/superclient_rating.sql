@@ -1,3 +1,5 @@
+/* This macro converts the product's 5-star rating into the client's proprietary rating */
+
 {% macro superclient_rating(review_rating) -%}
     case 
         when 0.97*5 < {{ review_rating }} <= 1.00*5 THEN 'A+'
